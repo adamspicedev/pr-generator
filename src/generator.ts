@@ -61,7 +61,7 @@ function buildPrompt(
     `File: ${file.path} (${file.status})
 Additions: ${file.additions}, Deletions: ${file.deletions}
 Diff:
-${file.diff.substring(0, 1000)}${file.diff.length > 1000 ? '...' : ''}`
+${file.diff.substring(0, 500)}${file.diff.length > 500 ? '...' : ''}`
   ).join('\n\n');
 
   const backendInfo = backendEndpoints.length > 0 
