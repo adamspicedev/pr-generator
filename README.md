@@ -13,6 +13,12 @@ A command-line tool that generates comprehensive pull request descriptions using
 
 ## Installation
 
+**Prerequisites**: This project uses [Bun](https://bun.sh/) as the package manager and runtime. Make sure you have Bun installed:
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
 1. Clone this repository:
 ```bash
 git clone <repository-url>
@@ -21,17 +27,17 @@ cd pr-generator
 
 2. Install dependencies:
 ```bash
-npm install
+bun install
 ```
 
 3. Build the project:
 ```bash
-npm run build
+bun run build
 ```
 
 4. Install the CLI globally:
 ```bash
-npm run install-cli
+bun run install-cli
 ```
 
 **Note**: You'll need a valid Anthropic API key to use the full functionality. You can get one from [Anthropic's website](https://console.anthropic.com/).
@@ -167,12 +173,12 @@ src/
 
 ### Building
 ```bash
-npm run build
+bun run build
 ```
 
 ### Development Mode
 ```bash
-npm run dev
+bun run dev
 ```
 
 ## Dependencies

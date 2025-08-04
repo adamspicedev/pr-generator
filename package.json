@@ -8,9 +8,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts",
-    "install-cli": "npm run build && npm link",
+    "start": "bun run dist/index.js",
+    "dev": "bun run src/index.ts",
+    "install-cli": "bun run build && bun link",
     "lint": "eslint src/ --ext .ts",
     "lint:fix": "eslint src/ --ext .ts --fix"
   },
@@ -30,7 +30,7 @@
     "@typescript-eslint/parser": "^8.38.0",
     "eslint": "^9.32.0",
     "ts-node": "^10.9.0",
-    "typescript": "^5.3.0"
+    "typescript": "^5.8.0"
   },
   "keywords": [
     "cli",
