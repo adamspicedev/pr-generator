@@ -14,7 +14,6 @@ export async function getChanges(baseBranch: string = 'main'): Promise<GitChange
     const branchName = currentBranch.current;
     
     // Get diff against base branch
-    const diff = await git.diff([`${baseBranch}...HEAD`]);
     const diffSummary = await git.diffSummary([`${baseBranch}...HEAD`]);
     
     // Get list of changed files

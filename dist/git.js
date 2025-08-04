@@ -18,7 +18,6 @@ async function getChanges(baseBranch = 'main') {
         const currentBranch = await git.branch();
         const branchName = currentBranch.current;
         // Get diff against base branch
-        const diff = await git.diff([`${baseBranch}...HEAD`]);
         const diffSummary = await git.diffSummary([`${baseBranch}...HEAD`]);
         // Get list of changed files
         const changedFiles = await git.diffSummary([`${baseBranch}...HEAD`]);

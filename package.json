@@ -10,23 +10,35 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
-    "install-cli": "npm run build && npm link"
+    "install-cli": "npm run build && npm link",
+    "lint": "eslint src/ --ext .ts",
+    "lint:fix": "eslint src/ --ext .ts --fix"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.18.0",
-    "commander": "^11.1.0",
-    "simple-git": "^3.22.0",
     "chalk": "^4.1.2",
+    "commander": "^11.1.0",
     "inquirer": "^8.2.6",
-    "mermaid": "^10.6.1"
+    "mermaid": "^10.6.1",
+    "simple-git": "^3.22.0"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0",
+    "@eslint/js": "^9.32.0",
     "@types/inquirer": "^8.2.10",
-    "typescript": "^5.3.0",
-    "ts-node": "^10.9.0"
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "eslint": "^9.32.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.3.0"
   },
-  "keywords": ["cli", "pull-request", "anthropic", "git"],
+  "keywords": [
+    "cli",
+    "pull-request",
+    "anthropic",
+    "git"
+  ],
   "author": "",
-  "license": "MIT"
-} 
+  "license": "MIT",
+  "type": "module"
+}

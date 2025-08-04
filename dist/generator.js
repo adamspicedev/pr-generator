@@ -14,7 +14,7 @@ async function generatePR(changes, apiKey, options = {}) {
     });
     const backendEndpoints = (0, git_1.detectBackendEndpoints)(changes.files);
     const frontendChanges = (0, git_1.detectFrontendChanges)(changes.files);
-    const prompt = buildPrompt(changes, backendEndpoints, frontendChanges, options);
+    const prompt = buildPrompt(changes, backendEndpoints, frontendChanges);
     try {
         const response = await anthropic.messages.create({
             model: 'claude-3-5-sonnet-20241022',
@@ -44,7 +44,7 @@ async function generatePR(changes, apiKey, options = {}) {
         throw new Error(`Failed to generate PR description: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 }
-function buildPrompt(changes, backendEndpoints, frontendChanges, options) {
+function buildPrompt(changes, backendEndpoints, frontendChanges) {
     const fileDetails = changes.files.map(file => `File: ${file.path} (${file.status})
 Additions: ${file.additions}, Deletions: ${file.deletions}
 Diff:

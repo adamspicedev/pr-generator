@@ -109,7 +109,10 @@ export function createDemoChanges(): GitChanges {
 
 export function generateDemoPR(): string {
   const changes = createDemoChanges();
+  // These variables are used for demonstration purposes
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const backendEndpoints = detectBackendEndpoints(changes.files);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const frontendChanges = detectFrontendChanges(changes.files);
 
   return `# User Management System Implementation

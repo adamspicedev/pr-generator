@@ -2,9 +2,10 @@
 
 import { Command } from 'commander';
 import { generatePR } from './generator';
-import { setupGit, getChanges } from './git';
+import { getChanges } from './git';
 import { generateDemoPR } from './demo';
 import chalk from 'chalk';
+import fs from 'fs';
 
 const program = new Command();
 
@@ -26,7 +27,6 @@ program
         const prDescription = generateDemoPR();
         
         if (options.output) {
-          const fs = require('fs');
           fs.writeFileSync(options.output, prDescription);
           console.log(chalk.green(`✅ Demo PR description saved to ${options.output}`));
         } else {
@@ -60,7 +60,6 @@ program
       });
 
       if (options.output) {
-        const fs = require('fs');
         fs.writeFileSync(options.output, prDescription);
         console.log(chalk.green(`✅ PR description saved to ${options.output}`));
       } else {

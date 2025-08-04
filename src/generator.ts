@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { GitChanges, PRGenerationOptions, AnthropicResponse } from './types';
+import { GitChanges, PRGenerationOptions } from './types';
 import { detectBackendEndpoints, detectFrontendChanges } from './git';
 import { generateMermaidDiagram } from './diagram';
 
@@ -17,7 +17,7 @@ export async function generatePR(
   const backendEndpoints = detectBackendEndpoints(changes.files);
   const frontendChanges = detectFrontendChanges(changes.files);
   
-  const prompt = buildPrompt(changes, backendEndpoints, frontendChanges, options);
+  const prompt = buildPrompt(changes, backendEndpoints, frontendChanges);
   
   try {
     const response = await anthropic.messages.create({
@@ -55,8 +55,7 @@ export async function generatePR(
 function buildPrompt(
   changes: GitChanges, 
   backendEndpoints: string[], 
-  frontendChanges: string[],
-  options: PRGenerationOptions
+  frontendChanges: string[]
 ): string {
   const fileDetails = changes.files.map(file => 
     `File: ${file.path} (${file.status})

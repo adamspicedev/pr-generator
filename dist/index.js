@@ -9,6 +9,7 @@ const generator_1 = require("./generator");
 const git_1 = require("./git");
 const demo_1 = require("./demo");
 const chalk_1 = __importDefault(require("chalk"));
+const fs_1 = __importDefault(require("fs"));
 const program = new commander_1.Command();
 program
     .name('pr-gen')
@@ -26,8 +27,7 @@ program
             console.log(chalk_1.default.yellow('🎭 Running in demo mode...'));
             const prDescription = (0, demo_1.generateDemoPR)();
             if (options.output) {
-                const fs = require('fs');
-                fs.writeFileSync(options.output, prDescription);
+                fs_1.default.writeFileSync(options.output, prDescription);
                 console.log(chalk_1.default.green(`✅ Demo PR description saved to ${options.output}`));
             }
             else {
@@ -55,8 +55,7 @@ program
             generateDiagram: options.diagram !== false
         });
         if (options.output) {
-            const fs = require('fs');
-            fs.writeFileSync(options.output, prDescription);
+            fs_1.default.writeFileSync(options.output, prDescription);
             console.log(chalk_1.default.green(`✅ PR description saved to ${options.output}`));
         }
         else {
