@@ -3,6 +3,7 @@
 import { Command } from 'commander';
 import { generatePR } from './generator';
 import { setupGit, getChanges } from './git';
+import { generateDemoPR } from './demo';
 import chalk from 'chalk';
 
 const program = new Command();
@@ -15,13 +16,33 @@ program
   .option('-b, --base-branch <branch>', 'Base branch to compare against', 'main')
   .option('-o, --output <file>', 'Output file for the PR description')
   .option('--no-diagram', 'Skip generating diagrams')
+  .option('--demo', 'Run in demo mode with sample data')
   .action(async (options) => {
     try {
       console.log(chalk.blue('🚀 Starting PR Generator...'));
       
+      if (options.demo) {
+        console.log(chalk.yellow('🎭 Running in demo mode...'));
+        const prDescription = generateDemoPR();
+        
+        if (options.output) {
+          const fs = require('fs');
+          fs.writeFileSync(options.output, prDescription);
+          console.log(chalk.green(`✅ Demo PR description saved to ${options.output}`));
+        } else {
+          console.log(chalk.cyan('\n📋 Generated PR Description (Demo):'));
+          console.log(chalk.gray('─'.repeat(80)));
+          console.log(prDescription);
+          console.log(chalk.gray('─'.repeat(80)));
+          console.log(chalk.yellow('\n💡 Copy the content above to use in your GitHub PR'));
+        }
+        return;
+      }
+      
       const apiKey = options.apiKey || process.env.ANTHROPIC_API_KEY;
       if (!apiKey) {
         console.error(chalk.red('❌ Anthropic API key is required. Use --api-key or set ANTHROPIC_API_KEY environment variable.'));
+        console.log(chalk.yellow('💡 Try running with --demo to see how the tool works'));
         process.exit(1);
       }
 
