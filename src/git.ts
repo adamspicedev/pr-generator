@@ -13,19 +13,47 @@ export async function getChanges(baseBranch: string = 'main'): Promise<GitChange
     const currentBranch = await git.branch();
     const branchName = currentBranch.current;
     
-    // Get diff against base branch
-    const diffSummary = await git.diffSummary([`${baseBranch}...HEAD`]);
+    // Get diff against base branch, excluding node_modules and other unnecessary files
+    const diffSummary = await git.diffSummary([
+      `${baseBranch}...HEAD`,
+      '--',
+      ':!node_modules',
+      ':!dist',
+      ':!*.lock',
+      ':!package-lock.json',
+      ':!bun.lock'
+    ]);
     
-    // Get list of changed files
-    const changedFiles = await git.diffSummary([`${baseBranch}...HEAD`]);
+    // Get list of changed files, excluding node_modules and other unnecessary files
+    const changedFiles = await git.diffSummary([
+      `${baseBranch}...HEAD`,
+      '--',
+      ':!node_modules',
+      ':!dist',
+      ':!*.lock',
+      ':!package-lock.json',
+      ':!bun.lock'
+    ]);
     
     const files: ChangedFile[] = [];
     
-    for (const file of changedFiles.files) {
+    // Limit to first 50 files to prevent token limit issues
+    const filesToProcess = changedFiles.files.slice(0, 50);
+    
+    for (const file of filesToProcess) {
       // Check if this is a text file with changes
       if ('changes' in file && file.changes > 0) {
         // Get the actual diff for this file
-        const fileDiff = await git.diff([`${baseBranch}...HEAD`, '--', file.file]);
+        const fileDiff = await git.diff([
+          `${baseBranch}...HEAD`,
+          '--',
+          file.file,
+          ':!node_modules',
+          ':!dist',
+          ':!*.lock',
+          ':!package-lock.json',
+          ':!bun.lock'
+        ]);
         
         files.push({
           path: file.file,
@@ -37,7 +65,16 @@ export async function getChanges(baseBranch: string = 'main'): Promise<GitChange
         });
       } else if ('insertions' in file && (file.insertions > 0 || file.deletions > 0)) {
         // Handle files that might not have 'changes' property but have insertions/deletions
-        const fileDiff = await git.diff([`${baseBranch}...HEAD`, '--', file.file]);
+        const fileDiff = await git.diff([
+          `${baseBranch}...HEAD`,
+          '--',
+          file.file,
+          ':!node_modules',
+          ':!dist',
+          ':!*.lock',
+          ':!package-lock.json',
+          ':!bun.lock'
+        ]);
         
         files.push({
           path: file.file,
@@ -51,7 +88,13 @@ export async function getChanges(baseBranch: string = 'main'): Promise<GitChange
     }
     
     // Generate summary
-    const summary = `Changes in ${files.length} files: ${diffSummary.insertions} additions, ${diffSummary.deletions} deletions`;
+    const totalFiles = changedFiles.files.length;
+    const processedFiles = files.length;
+    const summary = `Changes in ${processedFiles} files (showing first ${processedFiles} of ${totalFiles}): ${diffSummary.insertions} additions, ${diffSummary.deletions} deletions`;
+    
+    if (totalFiles > 50) {
+      console.log(`⚠️  Warning: Found ${totalFiles} changed files, but only processing first 50 to avoid token limits.`);
+    }
     
     return {
       files,
