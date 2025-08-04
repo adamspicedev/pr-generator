@@ -1,15 +1,9 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateMermaidDiagram = generateMermaidDiagram;
-const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
-async function generateMermaidDiagram(changes, backendEndpoints) {
+import Anthropic from '@anthropic-ai/sdk';
+export async function generateMermaidDiagram(changes, backendEndpoints) {
     if (backendEndpoints.length === 0) {
         return null;
     }
-    const anthropic = new sdk_1.default({
+    const anthropic = new Anthropic({
         apiKey: 'v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',
     });
     const endpointDetails = backendEndpoints.map(path => {

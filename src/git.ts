@@ -1,5 +1,5 @@
 import simpleGit, { SimpleGit } from 'simple-git';
-import { GitChanges, ChangedFile } from './types';
+import { GitChanges, ChangedFile } from './types.js';
 
 export function setupGit(): SimpleGit {
   return simpleGit();

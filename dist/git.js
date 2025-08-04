@@ -1,17 +1,8 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.setupGit = setupGit;
-exports.getChanges = getChanges;
-exports.detectBackendEndpoints = detectBackendEndpoints;
-exports.detectFrontendChanges = detectFrontendChanges;
-const simple_git_1 = __importDefault(require("simple-git"));
-function setupGit() {
-    return (0, simple_git_1.default)();
+import simpleGit from 'simple-git';
+export function setupGit() {
+    return simpleGit();
 }
-async function getChanges(baseBranch = 'main') {
+export async function getChanges(baseBranch = 'main') {
     const git = setupGit();
     try {
         // Get current branch
@@ -72,7 +63,7 @@ async function getFileContent(filePath) {
         return undefined;
     }
 }
-function detectBackendEndpoints(files) {
+export function detectBackendEndpoints(files) {
     const backendFiles = files.filter(file => file.path.includes('/api/') ||
         file.path.includes('/routes/') ||
         file.path.includes('/controllers/') ||
@@ -81,7 +72,7 @@ function detectBackendEndpoints(files) {
         file.path.endsWith('.ts') && file.path.includes('server'));
     return backendFiles.map(file => file.path);
 }
-function detectFrontendChanges(files) {
+export function detectFrontendChanges(files) {
     const frontendFiles = files.filter(file => file.path.includes('/components/') ||
         file.path.includes('/pages/') ||
         file.path.includes('/hooks/') ||

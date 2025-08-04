@@ -1,5 +1,5 @@
-import { GitChanges, ChangedFile } from './types';
-import { detectBackendEndpoints, detectFrontendChanges } from './git';
+import { GitChanges, ChangedFile } from './types.js';
+import { detectBackendEndpoints, detectFrontendChanges } from './git.js';
 
 export function createDemoChanges(): GitChanges {
   const files: ChangedFile[] = [
@@ -115,48 +115,59 @@ export function generateDemoPR(): string {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const frontendChanges = detectFrontendChanges(changes.files);
 
-  return `# User Management System Implementation
+  return `# [Brief, descriptive title of the main change]
 
 ## Overview
-This PR implements a comprehensive user management system with RESTful API endpoints, React frontend components, and TypeScript type definitions. The changes provide a complete user CRUD functionality with proper error handling and type safety.
+This section should provide a concise summary of what this PR accomplishes. Include the main goal, scope, and any high-level context that reviewers need to understand the changes.
 
 ## Key Changes
 
-### Backend API Endpoints
-- **Added** \`src/api/endpoints.ts\` - Express router with user management endpoints
-  - \`GET /api/users\` - Retrieve all users
-  - \`POST /api/users\` - Create new user with validation
-  - \`PUT /api/users/:id\` - Update existing user
+### Backend Changes
+This section should document any backend modifications including:
+- New API endpoints added or modified
+- Database schema changes
+- Server-side logic updates
+- Configuration changes
+- Performance improvements
 
-### Frontend Components
-- **Added** \`src/components/UserList.tsx\` - React component for displaying users
-  - Implements loading states and error handling
-  - Fetches data from the new API endpoints
-  - Provides user selection functionality
-  - Responsive grid layout for user cards
+### Frontend Changes
+This section should cover frontend modifications such as:
+- New components or pages added
+- UI/UX improvements
+- State management changes
+- Integration with backend APIs
+- Responsive design updates
 
-### TypeScript Types
-- **Added** \`src/types/user.ts\` - Type definitions for user management
-  - \`User\` interface with all required fields
-  - \`CreateUserRequest\` for user creation
-  - \`UpdateUserRequest\` for user updates
+### Infrastructure Changes
+This section should include any infrastructure updates like:
+- Deployment configuration changes
+- Environment variable updates
+- Build process modifications
+- Third-party service integrations
 
 ## Testing Considerations
-- Test all API endpoints with various input scenarios
-- Verify error handling for invalid requests
-- Test frontend component with different data states
-- Validate TypeScript type safety across the application
-- Test user interaction flows and state management
+This section should outline what needs to be tested, including:
+- Specific test scenarios to verify
+- Edge cases to consider
+- Integration testing requirements
+- Performance testing needs
+- User acceptance testing criteria
 
 ## Notes for Reviewers
-- Pay attention to API error handling and status codes
-- Verify TypeScript interfaces are comprehensive
-- Check React component performance and re-rendering
-- Ensure proper separation of concerns between layers
-- Review security considerations for user data handling
+This section should highlight areas that need special attention during review:
+- Complex logic that needs careful review
+- Breaking changes or migrations
+- Security considerations
+- Performance implications
+- Areas where additional testing might be needed
 
 ## Impact
-This implementation provides a solid foundation for user management functionality. The modular design allows for easy extension and maintenance. The TypeScript integration ensures type safety throughout the application.
+This section should describe the broader impact of these changes:
+- How this affects users or other systems
+- Performance implications
+- Security considerations
+- Future maintenance implications
+- Any dependencies or prerequisites
 
 ## API Changes Diagram
 
@@ -166,21 +177,11 @@ sequenceDiagram
     participant S as Server
     participant D as Database
 
-    C->>S: GET /api/users
-    S->>D: Query all users
-    D-->>S: User data
-    S-->>C: JSON response
+    C->>S: [API Request]
+    S->>D: [Database Query]
+    D-->>S: [Response Data]
+    S-->>C: [API Response]
+\`\`\`
 
-    C->>S: POST /api/users
-    S->>S: Validate input
-    S->>D: Create user
-    D-->>S: New user data
-    S-->>C: 201 Created
-
-    C->>S: PUT /api/users/:id
-    S->>S: Validate input
-    S->>D: Update user
-    D-->>S: Updated user data
-    S-->>C: JSON response
-\`\`\``;
+This diagram shows the flow of API interactions when backend endpoints are modified. It should illustrate the request/response cycle and any database or external service interactions.`;
 } 

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { generatePR } from './generator';
-import { getChanges } from './git';
-import { generateDemoPR } from './demo';
+import { generatePR } from './generator.js';
+import { getChanges } from './git.js';
+import { generateDemoPR } from './demo.js';
 import chalk from 'chalk';
 import fs from 'fs';
 

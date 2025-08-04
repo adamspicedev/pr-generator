@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { GitChanges, PRGenerationOptions } from './types';
-import { detectBackendEndpoints, detectFrontendChanges } from './git';
-import { generateMermaidDiagram } from './diagram';
+import { GitChanges, PRGenerationOptions } from './types.js';
+import { detectBackendEndpoints, detectFrontendChanges } from './git.js';
+import { generateMermaidDiagram } from './diagram.js';
 
 const ANTHROPIC_API_KEY = 'v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';
 

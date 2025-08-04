@@ -1,19 +1,13 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generatePR = generatePR;
-const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
-const git_1 = require("./git");
-const diagram_1 = require("./diagram");
+import Anthropic from '@anthropic-ai/sdk';
+import { detectBackendEndpoints, detectFrontendChanges } from './git.js';
+import { generateMermaidDiagram } from './diagram.js';
 const ANTHROPIC_API_KEY = 'v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';
-async function generatePR(changes, apiKey, options = {}) {
-    const anthropic = new sdk_1.default({
+export async function generatePR(changes, apiKey, options = {}) {
+    const anthropic = new Anthropic({
         apiKey: apiKey || ANTHROPIC_API_KEY,
     });
-    const backendEndpoints = (0, git_1.detectBackendEndpoints)(changes.files);
-    const frontendChanges = (0, git_1.detectFrontendChanges)(changes.files);
+    const backendEndpoints = detectBackendEndpoints(changes.files);
+    const frontendChanges = detectFrontendChanges(changes.files);
     const prompt = buildPrompt(changes, backendEndpoints, frontendChanges);
     try {
         const response = await anthropic.messages.create({
@@ -33,7 +27,7 @@ async function generatePR(changes, apiKey, options = {}) {
         let prDescription = content.text;
         // Generate diagram if requested and backend endpoints were detected
         if (options.generateDiagram && backendEndpoints.length > 0) {
-            const diagram = await (0, diagram_1.generateMermaidDiagram)(changes, backendEndpoints);
+            const diagram = await generateMermaidDiagram(changes, backendEndpoints);
             if (diagram) {
                 prDescription += '\n\n## API Changes Diagram\n\n```mermaid\n' + diagram + '\n```';
             }

@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { GitChanges } from './types';
+import { GitChanges } from './types.js';
 
 export async function generateMermaidDiagram(
   changes: GitChanges, 
