@@ -11,6 +11,9 @@ A command-line tool that generates comprehensive pull request descriptions using
 - 🎨 **Frontend/Backend Classification**: Intelligently categorizes changes
 - 📋 **Easy Copy-Paste**: Outputs clean Markdown ready for GitHub
 - 🚀 **Direct GitHub Publishing**: Option to publish PRs directly to GitHub
+- ⚙️ **Configuration Management**: Store GitHub credentials and API keys locally
+- 🔍 **Auto-Detection**: Automatically detect repository and current branch
+- 🔄 **Auto-Detect Head Branch**: Option to always use current branch for PRs
 
 ## Installation
 
@@ -74,6 +77,9 @@ pr-gen --no-diagram
 
 # Skip GitHub publishing prompt
 pr-gen --no-publish
+
+# Manage stored configuration
+pr-gen --config
 ```
 
 ### Environment Variables
@@ -95,6 +101,30 @@ If you don't have an API key, you can run the tool in demo mode to see how it wo
 pr-gen --demo
 ```
 
+### Configuration Management
+
+The tool stores configuration locally in `.pr-generator.json` to avoid repeated prompts:
+
+**GitHub Configuration:**
+- Personal Access Token
+- Repository owner and name
+- Base branch (defaults to main)
+- Head branch (can be set to auto-detect current branch)
+
+**Anthropic API Key:**
+- Stored securely for future use
+
+**Manage Configuration:**
+```bash
+pr-gen --config
+```
+
+This allows you to:
+- View current configuration
+- Set GitHub credentials
+- Set API keys
+- Clear all stored data
+
 ### GitHub Integration
 
 The tool can optionally publish PRs directly to GitHub. You'll need:
@@ -102,7 +132,7 @@ The tool can optionally publish PRs directly to GitHub. You'll need:
 - Repository owner and name
 - Base and head branch information
 
-The tool will prompt for these details when you choose to publish.
+The tool will prompt for these details when you choose to publish, and can save them for future use.
 
 ## Output Format
 
@@ -115,6 +145,26 @@ The generated PR description includes:
 5. **Notes for Reviewers**: Specific areas needing attention
 6. **Impact**: What the change means for the system and users
 7. **API Changes Diagram**: Mermaid sequence diagram (if backend changes detected)
+
+## Advanced Features
+
+### Auto-Detection
+The tool automatically detects:
+- **Repository**: From Git remote URL
+- **Current Branch**: For head branch selection
+- **Stored Configuration**: For GitHub credentials and API keys
+
+### Configuration Management
+```bash
+# View current configuration
+pr-gen --config
+
+# The tool will show:
+# - GitHub configuration (owner, repo, token)
+# - Detected repository information
+# - Stored API keys
+# - Configuration file location
+```
 
 ## Examples
 
@@ -152,8 +202,6 @@ This change significantly improves application security and user account protect
 ```
 
 ### With API Diagram
-```markdown
-## API Changes Diagram
 
 ```mermaid
 sequenceDiagram
@@ -170,7 +218,6 @@ sequenceDiagram
     S->>S: Validate MFA code
     S-->>C: JWT token
 ```
-```
 
 ## Development
 
@@ -182,6 +229,7 @@ src/
 ├── git.ts           # Git operations
 ├── diagram.ts       # Mermaid diagram generation
 ├── github.ts        # GitHub API integration
+├── config.ts        # Configuration management
 └── types.ts         # TypeScript type definitions
 ```
 
