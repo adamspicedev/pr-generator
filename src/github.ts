@@ -1,12 +1,35 @@
 import { Octokit } from '@octokit/rest';
 import inquirer from 'inquirer';
+import { ConfigManager } from './config.js';
 
 export interface GitHubConfig {
   token: string;
   owner: string;
   repo: string;
   baseBranch: string;
-  headBranch: string;
+  headBranch: string | 'current';
+}
+
+export interface CurrentRepo {
+  owner: string;
+  repo: string;
+}
+
+export async function detectCurrentRepo(): Promise<CurrentRepo | null> {
+  try {
+    const { execSync } = await import('child_process');
+    const remoteUrl = execSync('git remote get-url origin', { encoding: 'utf8' }).trim();
+    const match = remoteUrl.match(/github\.com[:/]([^/]+)\/([^/]+?)(?:\.git)?$/);
+    if (match) {
+      return {
+        owner: match[1],
+        repo: match[2]
+      };
+    }
+  } catch {
+    // Git remote not available or not a GitHub repo
+  }
+  return null;
 }
 
 export interface PRData {
@@ -17,11 +40,52 @@ export interface PRData {
 }
 
 export async function getGitHubConfig(): Promise<GitHubConfig | null> {
+  const configManager = new ConfigManager();
+  const storedConfig = configManager.getGitHubConfig();
+  
+  // Try to get current repo info from git remote
+  const currentRepo = await detectCurrentRepo();
+  
+  // Check if we have complete stored config
+  if (configManager.hasCompleteGitHubConfig()) {
+    const { useStored } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'useStored',
+        message: `Use stored GitHub config? (${storedConfig.owner}/${storedConfig.repo})`,
+        default: true
+      }
+    ]);
+
+    if (useStored) {
+      let headBranch = storedConfig.headBranch || 'main';
+      
+      // If headBranch is set to 'current', get the current branch
+      if (headBranch === 'current') {
+        try {
+          const { execSync } = await import('child_process');
+          headBranch = execSync('git branch --show-current', { encoding: 'utf8' }).trim();
+        } catch {
+          headBranch = 'main';
+        }
+      }
+
+      return {
+        token: storedConfig.token!,
+        owner: storedConfig.owner!,
+        repo: storedConfig.repo!,
+        baseBranch: storedConfig.baseBranch || 'main',
+        headBranch
+      };
+    }
+  }
+
   const answers = await inquirer.prompt([
     {
       type: 'input',
       name: 'token',
       message: 'Enter your GitHub Personal Access Token:',
+      default: storedConfig.token,
       validate: (input: string) => {
         if (!input.trim()) {
           return 'GitHub token is required';
@@ -33,6 +97,7 @@ export async function getGitHubConfig(): Promise<GitHubConfig | null> {
       type: 'input',
       name: 'owner',
       message: 'Enter the repository owner (username or organization):',
+      default: currentRepo?.owner || storedConfig.owner,
       validate: (input: string) => {
         if (!input.trim()) {
           return 'Repository owner is required';
@@ -44,6 +109,7 @@ export async function getGitHubConfig(): Promise<GitHubConfig | null> {
       type: 'input',
       name: 'repo',
       message: 'Enter the repository name:',
+      default: currentRepo?.repo || storedConfig.repo,
       validate: (input: string) => {
         if (!input.trim()) {
           return 'Repository name is required';
@@ -55,30 +121,68 @@ export async function getGitHubConfig(): Promise<GitHubConfig | null> {
       type: 'input',
       name: 'baseBranch',
       message: 'Enter the base branch (default: main):',
-      default: 'main'
+      default: storedConfig.baseBranch || 'main'
+    },
+    {
+      type: 'list',
+      name: 'headBranch',
+      message: 'Select the head branch:',
+      choices: [
+        { name: 'Use current branch (auto-detect)', value: 'current' },
+        { name: 'Enter specific branch name', value: 'custom' }
+      ]
     },
     {
       type: 'input',
-      name: 'headBranch',
-      message: 'Enter the head branch (current branch):',
+      name: 'customHeadBranch',
+      message: 'Enter the head branch name:',
+      when: (answers) => answers.headBranch === 'custom',
       default: async () => {
-        const { execSync } = await import('child_process');
         try {
+          const { execSync } = await import('child_process');
           return execSync('git branch --show-current', { encoding: 'utf8' }).trim();
         } catch {
           return 'main';
         }
+      },
+      validate: (input: string) => {
+        if (!input.trim()) {
+          return 'Branch name is required';
+        }
+        return true;
       }
     }
   ]);
 
-  return {
+  const config = {
     token: answers.token,
     owner: answers.owner,
     repo: answers.repo,
     baseBranch: answers.baseBranch,
-    headBranch: answers.headBranch
+    headBranch: answers.headBranch === 'custom' ? answers.customHeadBranch : 'current'
   };
+
+  // Store the configuration for future use
+  const { saveConfig } = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'saveConfig',
+      message: 'Save this configuration for future use?',
+      default: true
+    }
+  ]);
+
+  if (saveConfig) {
+    configManager.setGitHubConfig({
+      token: config.token,
+      owner: config.owner,
+      repo: config.repo,
+      baseBranch: config.baseBranch,
+      headBranch: config.headBranch
+    });
+  }
+
+  return config;
 }
 
 export async function publishPR(
@@ -95,11 +199,25 @@ export async function publishPR(
     const title = lines[0].replace(/^#\s*/, '').trim();
     const body = lines.slice(1).join('\n').trim();
 
+    // Resolve headBranch if it's set to 'current'
+    let headBranch = config.headBranch;
+    if (headBranch === 'current') {
+      try {
+        const { execSync } = await import('child_process');
+        headBranch = execSync('git branch --show-current', { encoding: 'utf8' }).trim();
+      } catch {
+        return {
+          success: false,
+          error: 'Failed to get current branch'
+        };
+      }
+    }
+
     const prData: PRData = {
       title,
       body,
       base: config.baseBranch,
-      head: config.headBranch
+      head: headBranch
     };
 
     // Check if PR already exists
@@ -107,7 +225,7 @@ export async function publishPR(
       owner: config.owner,
       repo: config.repo,
       state: 'open',
-      head: `${config.owner}:${config.headBranch}`
+      head: `${config.owner}:${headBranch}`
     });
 
     if (existingPRs.data.length > 0) {
