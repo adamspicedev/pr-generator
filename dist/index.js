@@ -3,6 +3,7 @@ import { Command } from 'commander';
 import { generatePR } from './generator.js';
 import { getChanges } from './git.js';
 import { generateDemoPR } from './demo.js';
+import { promptForGitHubPublish } from './github.js';
 import chalk from 'chalk';
 import fs from 'fs';
 const program = new Command();
@@ -15,6 +16,7 @@ program
     .option('-o, --output <file>', 'Output file for the PR description')
     .option('--no-diagram', 'Skip generating diagrams')
     .option('--demo', 'Run in demo mode with sample data')
+    .option('--no-publish', 'Skip GitHub publishing prompt')
     .action(async (options) => {
     try {
         console.log(chalk.blue('🚀 Starting PR Generator...'));
@@ -31,6 +33,10 @@ program
                 console.log(prDescription);
                 console.log(chalk.gray('─'.repeat(80)));
                 console.log(chalk.yellow('\n💡 Copy the content above to use in your GitHub PR'));
+            }
+            // Offer to publish to GitHub
+            if (options.publish !== false) {
+                await promptForGitHubPublish(prDescription);
             }
             return;
         }
@@ -59,6 +65,10 @@ program
             console.log(prDescription);
             console.log(chalk.gray('─'.repeat(80)));
             console.log(chalk.yellow('\n💡 Copy the content above to use in your GitHub PR'));
+        }
+        // Offer to publish to GitHub
+        if (options.publish !== false) {
+            await promptForGitHubPublish(prDescription);
         }
     }
     catch (error) {

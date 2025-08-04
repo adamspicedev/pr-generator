@@ -10,6 +10,7 @@ A command-line tool that generates comprehensive pull request descriptions using
 - 📊 **Mermaid Diagrams**: Generates sequence diagrams for API changes
 - 🎨 **Frontend/Backend Classification**: Intelligently categorizes changes
 - 📋 **Easy Copy-Paste**: Outputs clean Markdown ready for GitHub
+- 🚀 **Direct GitHub Publishing**: Option to publish PRs directly to GitHub
 
 ## Installation
 
@@ -70,6 +71,9 @@ pr-gen --output pr-description.md
 
 # Skip diagram generation
 pr-gen --no-diagram
+
+# Skip GitHub publishing prompt
+pr-gen --no-publish
 ```
 
 ### Environment Variables
@@ -90,6 +94,15 @@ If you don't have an API key, you can run the tool in demo mode to see how it wo
 ```bash
 pr-gen --demo
 ```
+
+### GitHub Integration
+
+The tool can optionally publish PRs directly to GitHub. You'll need:
+- A GitHub Personal Access Token with `repo` permissions
+- Repository owner and name
+- Base and head branch information
+
+The tool will prompt for these details when you choose to publish.
 
 ## Output Format
 
@@ -168,6 +181,7 @@ src/
 ├── generator.ts      # PR generation logic
 ├── git.ts           # Git operations
 ├── diagram.ts       # Mermaid diagram generation
+├── github.ts        # GitHub API integration
 └── types.ts         # TypeScript type definitions
 ```
 
