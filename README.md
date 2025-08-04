@@ -34,6 +34,8 @@ npm run build
 npm run install-cli
 ```
 
+**Note**: You'll need a valid Anthropic API key to use the full functionality. You can get one from [Anthropic's website](https://console.anthropic.com/).
+
 ## Usage
 
 ### Basic Usage
@@ -41,6 +43,11 @@ npm run install-cli
 Generate a PR description for changes compared to main branch:
 ```bash
 pr-gen
+```
+
+**Demo Mode**: Try the tool without an API key:
+```bash
+pr-gen --demo
 ```
 
 ### Advanced Usage
@@ -72,6 +79,11 @@ pr-gen
 The tool uses your Anthropic API key to generate descriptions. You can provide it via:
 - Command line argument: `--api-key`
 - Environment variable: `ANTHROPIC_API_KEY`
+
+If you don't have an API key, you can run the tool in demo mode to see how it works:
+```bash
+pr-gen --demo
+```
 
 ## Output Format
 
